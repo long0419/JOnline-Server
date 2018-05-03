@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8"/>
+    <title></title>
+</head>
+<body>
+    <li>Avaliable License Servers
+        <table border="1">
+            <tr>
+                <th>#</th>
+                <th>Server</th>
+                <th>Status</th>
+            </tr>
+            <tr  th:each="server,serverStat: ${list}">
+                <td th:text="${serverStat.index + 1}"></td>
+                <td th:text="${server.url}"></td>
+                <td th:text="${server.status == '1'} ? green : red"></td>
+            </tr>
+        </table>
+    </li>
+</body>
