@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>mail</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .punch-line {
+            word-warp: break-word;
+            word-break: break-all;
+        }
+
+        .rececc-padding {
+            padding-right: 2.0rem;
+        }
+
+        .as-nolines {
+            max-width: 100%;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+            -ms-text-overflow: ellipsis;
+            -o-text-overflow: ellipsis;
+            -webkit-text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .as-80nolines {
+            max-width: 100px;
+            overflow-x: hidden;
+            text-overflow: clip; /* 剪切 不以...作为结尾 */
+            -ms-text-overflow: clip;
+            -o-text-overflow: clip;
+            -webkit-text-overflow: clip;
+            white-space: nowrap;
+        }
+
+        .div-inline {
+            float: left; /* div并排 */
+        }
+    </style>
+    <script type="text/javascript" charset="utf-8" src="https://cdn.bootcss.com/pako/1.0.6/pako.min.js"></script>
+</head>
+<body style="word-wrap: break-word; font-family: Arial;">
+<article>
+
+    /*此处写你想要的内容*/
+
+</article>
+<script>
+    function punzipMsgSTR() {
+        try {
+            var punzipstr = "%1F%C2%8B%08%00%00%00%00%00%00%00%7B%C3%961%C3%B1%C3%99%C3%9C%C2%A5Ov%C2%ACz%C2%BAd%C3%B9%C2%B3%C3%89%C2%BD%00G%C2%9B%C2%91%C2%8C%0F%00%00%00";
+            punzipstr = decodeURIComponent(punzipstr);
+            console.log("punzipMsgSTR------------ok-" + punzipstr);
+            var restored = pako.ungzip(punzipstr, {to: 'string'}); // 解
+            console.log("punzipMsgSTR------------ok-" + restored);
+        } catch (err) {
+            console.log("punzipMsgSTR------------error-" + err);
+        }
+        return restored;
+    }
+
+    function zipMsg() {
+        var pzipstr = "我来个大操";
+        var str = pako.gzip(pzipstr, {to: 'string'}); // 解
+        console.log("pzipstr------------ok-" + pzipstr);
+        pzipstr = encodeURIComponent(str);
+        console.log("pzipMsgSTR uri ------------ok-" + pzipstr);
+    }
+
+
+    function unzipMessageEACH(string) {
+        var iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        var iframedocument;
+        var iframeWindow;
+        document.body.appendChild(iframe);
+        iframedocument = iframe.contentDocument;// contentWindow.document;
+        iframeWindow = iframe.contentWindow;
+        iframedocument.open();
+        iframedocument.write(string);
+        iframedocument.close();
+
+        var classnames = "jscompressed";
+        var tagnames = "p";
+        var tags = iframedocument.getElementsByTagName(tagnames);// 获取HTML的
+        // *表示所有类型标签
+        for (var i in tags) {// 对标签进行遍历
+            if (tags[i].nodeType == 1) {// 判断节点类型
+                if (tags[i].getAttribute("class") == classnames) { // 判断和需要CLASS名字相同的，并组成一个数组
+                    var htmlcontent = tags[i].innerHTML;
+
+                    if ((htmlcontent == null || htmlcontent == undefined || htmlcontent == '' || htmlcontent.substr(0, 1) !== "%")) {
+                        continue;
+                    }
+                    try {
+                        console.log("unzipMessageEACH------htmlcontent = " + htmlcontent);
+                        htmlcontent = decodeURIComponent(htmlcontent);
+                        var restored = pako.ungzip(htmlcontent, {to: 'string'}); // 解
+                        tags[i].innerHTML = restored;
+                    } catch (e) {
+                        console.log("unzipMessageEACH------------e-" + e);
+                    }
+                }
+            }
+        }
+        console.log("newdom.value iframeWindow = " + iframeWindow.document.body.innerHTML);
+        var result = iframeWindow.document.body.innerHTML + "";
+        document.body.removeChild(iframe);
+        return result;
+        /* return iframedocument.innerHTML; */
+        /* return iframedocument.innerText; */
+    }
+
+</script>
+</body>
+</html>
