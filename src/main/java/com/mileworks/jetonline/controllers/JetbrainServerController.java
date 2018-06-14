@@ -18,16 +18,16 @@ import java.util.List;
  */
 
 @Controller
-@RequestMapping("online")
 public class JetbrainServerController {
 
     OkHttpClient client = new OkHttpClient();
 
-    @RequestMapping("/servers")
+    @RequestMapping("/")
     public String getServers(ModelMap map) {
         String content = "";
+
         Request request = new Request.Builder()
-                .url("http://xidea.online/assets/js/main-e025f78b7b.js")
+                .url("http://xidea.online/servers.html")
                 .build();
 
         try {
@@ -37,8 +37,23 @@ public class JetbrainServerController {
             e.printStackTrace();
         }
 
-        int begin = content.indexOf("servers:[");
-        int end = content.indexOf(",donate:{");
+        int begin = content.indexOf("assets/js/main-");
+        int end = content.indexOf("\"></script><script>__.R.servers();");
+        String mainJs = content.substring(begin, end) ;
+
+        request = new Request.Builder()
+                .url("http://xidea.online/" + mainJs)
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            content = response.body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        begin = content.indexOf("servers:[");
+        end = content.indexOf(",donate:{");
         String servers = "{" +  content.substring(begin, end) + "}" ;
 
         JsonParser parser = new JsonParser();
